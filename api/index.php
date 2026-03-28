@@ -1,7 +1,7 @@
 <?php
 /**
  * PPAI Member Directory — API Router
- * Routes requests to appropriate handlers.
+ * Routes requests to appropriate handlers. Run with: php -S localhost:8000
  */
 
 require_once __DIR__ . '/members.php';
@@ -52,15 +52,16 @@ function applyFiltersAndSort(array $members): array {
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = rtrim($uri, '/');
 
-// Route: GET /api/members/search?query=X (must precede /api/members/{id} regex)
+// Route: GET /api/members/search?query=X&company=Y (must precede /api/members/{id} regex)
 if ($uri === '/api/members/search') {
-    $query = $_GET['query'] ?? '';
-    if ($query === '') {
+    $nameQuery = $_GET['query'] ?? '';
+    $companyQuery = $_GET['company'] ?? '';
+    if ($nameQuery === '' && $companyQuery === '') {
         http_response_code(400);
-        echo json_encode(['error' => true, 'message' => 'Missing required parameter: query']);
+        echo json_encode(['error' => true, 'message' => 'Missing required parameter: query or company']);
         exit;
     }
-    $members = applyFiltersAndSort(searchMembers($query));
+    $members = applyFiltersAndSort(searchMembers($nameQuery, $companyQuery));
     echo json_encode(['data' => $members, 'total' => count($members)]);
     exit;
 }
