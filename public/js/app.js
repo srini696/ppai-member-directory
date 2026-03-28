@@ -1,7 +1,7 @@
-/*
-Vanilla JS: state management, API calls, DOM rendering, event handlers.
+/**
+ * PPAI Member Directory — Frontend Application
+ * Vanilla JS: state management, API calls, DOM rendering, event handlers.
  */
-
 
 const API_BASE = '';
 
@@ -10,6 +10,7 @@ const state = {
     members: [],
     totalMembers: 0,
     query: '',
+    companyQuery: '',
     yearFilter: '',
     yearFilterLte: false,
     sortField: 'name',
@@ -22,6 +23,7 @@ const state = {
 // ── DOM References ──
 const dom = {
     searchInput: document.getElementById('searchInput'),
+    companySearchInput: document.getElementById('companySearchInput'),
     yearFilter: document.getElementById('yearFilter'),
     sortButtons: document.getElementById('sortButtons'),
     resetBtn: document.getElementById('resetBtn'),
@@ -72,8 +74,15 @@ async function fetchMembers() {
 
     try {
         let url;
-        if (state.query.trim()) {
-            url = `${API_BASE}/api/members/search?query=${encodeURIComponent(state.query.trim())}`;
+        const hasNameQuery = state.query.trim();
+        const hasCompanyQuery = state.companyQuery.trim();
+
+        if (hasNameQuery || hasCompanyQuery) {
+            url = `${API_BASE}/api/members/search?`;
+            const params = [];
+            if (hasNameQuery) params.push(`query=${encodeURIComponent(state.query.trim())}`);
+            if (hasCompanyQuery) params.push(`company=${encodeURIComponent(state.companyQuery.trim())}`);
+            url += params.join('&');
         } else {
             url = `${API_BASE}/api/members`;
         }
@@ -101,7 +110,7 @@ async function fetchMembers() {
         state.isLoading = false;
 
         // Capture total count from unfiltered initial load
-        if (!state.query.trim() && !state.yearFilter && state.totalMembers === 0) {
+        if (!state.query.trim() && !state.companyQuery.trim() && !state.yearFilter && state.totalMembers === 0) {
             state.totalMembers = data.total;
             dom.memberCountBadge.textContent = `${state.totalMembers} Members`;
         }
@@ -184,8 +193,15 @@ function updateResultsInfo() {
     const count = state.members.length;
     const total = state.totalMembers;
 
-    if (state.query.trim()) {
-        dom.resultsInfo.innerHTML = `Showing <strong>${count}</strong> of ${total} members matching <span class="query-highlight">"${escapeHtml(state.query.trim())}"</span>`;
+    const nameSearch = state.query.trim();
+    const companySearch = state.companyQuery.trim();
+
+    if (nameSearch && companySearch) {
+        dom.resultsInfo.innerHTML = `Showing <strong>${count}</strong> of ${total} members matching name <span class="query-highlight">"${escapeHtml(nameSearch)}"</span> and company <span class="query-highlight">"${escapeHtml(companySearch)}"</span>`;
+    } else if (nameSearch) {
+        dom.resultsInfo.innerHTML = `Showing <strong>${count}</strong> of ${total} members matching name <span class="query-highlight">"${escapeHtml(nameSearch)}"</span>`;
+    } else if (companySearch) {
+        dom.resultsInfo.innerHTML = `Showing <strong>${count}</strong> of ${total} members matching company <span class="query-highlight">"${escapeHtml(companySearch)}"</span>`;
     } else if (state.yearFilter) {
         dom.resultsInfo.innerHTML = `Showing <strong>${count}</strong> members since <strong>${state.yearFilter}</strong>`;
     } else {
@@ -262,13 +278,21 @@ function escapeHtml(str) {
 
 // ── Event Handlers ──
 
-// Search (debounced 300ms)
+// Name search (debounced 300ms)
 const handleSearch = debounce(() => {
     state.query = dom.searchInput.value;
     fetchMembers();
 }, 300);
 
 dom.searchInput.addEventListener('input', handleSearch);
+
+// Company search (debounced 300ms)
+const handleCompanySearch = debounce(() => {
+    state.companyQuery = dom.companySearchInput.value;
+    fetchMembers();
+}, 300);
+
+dom.companySearchInput.addEventListener('input', handleCompanySearch);
 
 // Year filter
 dom.yearFilter.addEventListener('click', (e) => {
@@ -313,12 +337,14 @@ dom.sortButtons.addEventListener('click', (e) => {
 // Reset filters
 dom.resetBtn.addEventListener('click', () => {
     state.query = '';
+    state.companyQuery = '';
     state.yearFilter = '';
     state.yearFilterLte = false;
     state.sortField = 'name';
     state.sortOrder = 'asc';
 
     dom.searchInput.value = '';
+    dom.companySearchInput.value = '';
     dom.yearFilter.querySelectorAll('.filter-option').forEach(el => el.classList.remove('active'));
     dom.yearFilter.querySelector('[data-year=""]').classList.add('active');
 
