@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PPAI Member Directory</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <div class="logo-mark">PP</div>
+                <div class="logo-text">PPAI</div>
+                <div class="logo-divider"></div>
+                <div class="logo-subtitle">Member Directory</div>
+            </div>
+            <div class="header-right">
+                <div class="member-count-badge" id="memberCountBadge">0 Members</div>
+            </div>
+        </header>
+
+        <div class="main">
+            <!-- Sidebar -->
+            <aside class="sidebar" id="sidebar">
+                <div class="sidebar-content" id="sidebarContent">
+                    <!-- Search -->
+                    <div class="sidebar-section">
+                        <h3>Search</h3>
+                        <div class="search-box">
+                            <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/></svg>
+                            <input type="text" class="search-input" id="searchInput" placeholder="Name or company..." autocomplete="off">
+                        </div>
+                    </div>
+
+                    <!-- Year Filter -->
+                    <div class="sidebar-section">
+                        <h3>Member Since</h3>
+                        <div class="filter-group" id="yearFilter">
+                            <div class="filter-option active" data-year="">
+                                <div class="filter-radio"></div>
+                                All Years
+                            </div>
+                            <div class="filter-option" data-year="2024">
+                                <div class="filter-radio"></div>
+                                2024
+                            </div>
+                            <div class="filter-option" data-year="2023">
+                                <div class="filter-radio"></div>
+                                2023
+                            </div>
+                            <div class="filter-option" data-year="2022">
+                                <div class="filter-radio"></div>
+                                2022
+                            </div>
+                            <div class="filter-option" data-year="2021">
+                                <div class="filter-radio"></div>
+                                2021
+                            </div>
+                            <div class="filter-option" data-year="2020" data-yearlte="1">
+                                <div class="filter-radio"></div>
+                                2020 &amp; earlier
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sort -->
+                    <div class="sidebar-section">
+                        <h3>Sort By</h3>
+                        <div class="sort-buttons" id="sortButtons">
+                            <button class="sort-btn active" data-sort="name">Name &#8593;</button>
+                            <button class="sort-btn" data-sort="company">Company</button>
+                            <button class="sort-btn" data-sort="year">Year</button>
+                        </div>
+                    </div>
+
+                    <!-- Reset -->
+                    <button class="reset-btn" id="resetBtn">Clear All Filters</button>
+                </div>
+            </aside>
+
+            <!-- Content -->
+            <main class="content">
+                <div class="content-header">
+                    <div class="results-info" id="resultsInfo">Loading members...</div>
+                </div>
+
+                <!-- Error Banner -->
+                <div class="error-banner hidden" id="errorBanner">
+                    <div class="error-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+                    </div>
+                    <div class="error-text">
+                        <strong>Something went wrong.</strong>
+                        <span id="errorMessage">Unable to load members. Please try again.</span>
+                    </div>
+                    <button class="error-retry" id="retryBtn">Retry</button>
+                </div>
+
+                <!-- Member List -->
+                <div class="member-list" id="memberList"></div>
+
+                <!-- Empty State -->
+                <div class="empty-state hidden" id="emptyState">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/><path d="M8 11h6"/></svg>
+                    <h3>No members found</h3>
+                    <p>Try adjusting your search or filters.</p>
+                </div>
+            </main>
+        </div>
+
+        <!-- Detail Panel Overlay -->
+        <div class="detail-overlay hidden" id="detailOverlay"></div>
+
+        <!-- Detail Panel -->
+        <div class="detail-panel hidden" id="detailPanel">
+            <button class="detail-close" id="detailClose" aria-label="Close details">&times;</button>
+            <div class="detail-header">
+                <div class="detail-avatar" id="detailAvatar"></div>
+                <div class="detail-name" id="detailName"></div>
+                <div class="detail-company" id="detailCompany"></div>
+            </div>
+            <div class="detail-divider"></div>
+            <div class="detail-fields" id="detailFields"></div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
