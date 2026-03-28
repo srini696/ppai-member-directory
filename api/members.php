@@ -21,16 +21,23 @@ function getAllMembers(): array {
     return getMemberData();
 }
 
-function searchMembers(string $query): array {
-    if ($query === '') {
-        return getMemberData();
+function searchMembers(string $nameQuery, string $companyQuery): array {
+    $members = getMemberData();
+
+    if ($nameQuery !== '') {
+        $members = array_values(array_filter($members, function (array $member) use ($nameQuery): bool {
+            return stripos($member['firstName'], $nameQuery) !== false
+                || stripos($member['lastName'],  $nameQuery) !== false;
+        }));
     }
 
-    return array_values(array_filter(getMemberData(), function (array $member) use ($query): bool {
-        return stripos($member['firstName'], $query) !== false
-            || stripos($member['lastName'],  $query) !== false
-            || stripos($member['company'],   $query) !== false;
-    }));
+    if ($companyQuery !== '') {
+        $members = array_values(array_filter($members, function (array $member) use ($companyQuery): bool {
+            return stripos($member['company'], $companyQuery) !== false;
+        }));
+    }
+
+    return $members;
 }
 
 function getMemberById(int $id): ?array {
